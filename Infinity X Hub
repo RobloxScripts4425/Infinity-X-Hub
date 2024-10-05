@@ -26,9 +26,15 @@ local function Fly()
     while flying do
         game:GetService("RunService").Heartbeat:Wait()
         BodyGyro.CFrame = workspace.CurrentCamera.CFrame
-        
-        -- Move the character's position without triggering walking animations
-        LocalPlayer.Character.HumanoidRootPart.Position = LocalPlayer.Character.HumanoidRootPart.Position + (workspace.CurrentCamera.CFrame.LookVector * 0) -- Não altera a posição
+
+        -- Move the character in the direction you are looking when pressing forward
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+            BodyVelocity.Velocity = workspace.CurrentCamera.CFrame.LookVector * 50
+        elseif UserInputService:IsKeyDown(Enum.KeyCode.S) then
+            BodyVelocity.Velocity = -workspace.CurrentCamera.CFrame.LookVector * 50
+        else
+            BodyVelocity.Velocity = Vector3.new(0, 0, 0) -- Para de mover se não estiver pressionando W ou S
+        end
     end
 end
 
