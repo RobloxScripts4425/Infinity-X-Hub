@@ -43,7 +43,8 @@ local function Fly()
         if game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.D) then
             moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
         end
-        BodyVelocity.Velocity = moveDirection.Unit * 50 + Vector3.new(0, 0, 0)
+        
+        BodyVelocity.Velocity = moveDirection.Unit * 50 + Vector3.new(0, 0, 0) -- Mantém o movimento no ar
     end
 end
 
@@ -52,7 +53,6 @@ local function Unfly()
     if BodyGyro then BodyGyro:Destroy() end
     if BodyVelocity then BodyVelocity:Destroy() end
     LocalPlayer.Character.Humanoid.PlatformStand = false
-    LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
 end
 
 local PlayerTab = Window:MakeTab({
@@ -145,16 +145,16 @@ PlayerTab:AddTextbox({
     Default = "Enter spin speed",
     TextDisappear = "Enter spin speed",
     Callback = function(value)
-        spinSpeed = tonumber(value)
+        spinSpeed = tonumber(value) or 0
     end
 })
 
 PlayerTab:AddButton({
     Name = "Start Spin",
     Callback = function()
-        while spinSpeed and spinSpeed > 0 do
+        while spinSpeed > 0 do
             LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
-            wait()
+            wait(0.1) -- Ajuste a velocidade de rotação
         end
     end
 })
@@ -171,14 +171,14 @@ PlayerTab:AddTextbox({
     Default = "Enter speed",
     TextDisappear = "Enter speed",
     Callback = function(value)
-        LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(value)
+        LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(value) or defaultWalkSpeed
     end
 })
 
 PlayerTab:AddButton({
     Name = "Add Speed",
     Callback = function()
-        LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(SpeedTextbox.Text) or defaultWalkSpeed
+        LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(PlayerTab:GetTextbox("Speed").Text) or defaultWalkSpeed
     end
 })
 
@@ -187,14 +187,14 @@ PlayerTab:AddTextbox({
     Default = "Enter Jump Power",
     TextDisappear = "Enter Jump Power",
     Callback = function(value)
-        LocalPlayer.Character.Humanoid.JumpPower = tonumber(value)
+        LocalPlayer.Character.Humanoid.JumpPower = tonumber(value) or defaultJumpPower
     end
 })
 
 PlayerTab:AddButton({
     Name = "Add JumpPower",
     Callback = function()
-        LocalPlayer.Character.Humanoid.JumpPower = tonumber(JumpPowerTextbox.Text) or defaultJumpPower
+        LocalPlayer.Character.Humanoid.JumpPower = tonumber(PlayerTab:GetTextbox("JumpPower").Text) or defaultJumpPower
     end
 })
 
