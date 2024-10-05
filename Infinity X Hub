@@ -4,7 +4,7 @@ local hrp = character:WaitForChild("HumanoidRootPart")
 
 while true do
     for _, object in pairs(workspace:GetChildren()) do
-        if object:IsA("Model") and not object:IsDescendantOf(game.Players) and object.PrimaryPart and not object.PrimaryPart.Anchored then
+        if object:IsA("Model") and object:FindFirstChild("PrimaryPart") and not object.PrimaryPart.Anchored then
             local distance = (hrp.Position - object.PrimaryPart.Position).magnitude
             
             if distance > 5 then
