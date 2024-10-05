@@ -3,7 +3,6 @@ local Window = OrionLib:MakeWindow({Name = "Infinity X Hub", HidePremium = false
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local UserInputService = game:GetService("UserInputService")
 local flying = false
 local BodyGyro, BodyVelocity
 
@@ -22,23 +21,12 @@ local function Fly()
     BodyVelocity.Parent = LocalPlayer.Character.HumanoidRootPart
 
     flying = true
+    LocalPlayer.Character.Humanoid.PlatformStand = true
 
-    -- Movimentação durante o voo
     while flying do
         game:GetService("RunService").Heartbeat:Wait()
         BodyGyro.CFrame = workspace.CurrentCamera.CFrame
-        
-        -- Movimentação baseada na entrada do toque
-        local moveDirection = Vector3.new(0, 0, 0)
-
-        if UserInputService:IsMouseButtonPressed(1) then
-            local mousePos = UserInputService:GetMouseLocation()
-            local cameraDirection = workspace.CurrentCamera.CFrame.LookVector
-            moveDirection = cameraDirection * (mousePos.Y > 0 and 1 or -1) -- Ajuste conforme a direção
-        end
-
-        BodyVelocity.Velocity = moveDirection * 50 -- Ajuste a velocidade conforme necessário
-        LocalPlayer.Character.Humanoid.PlatformStand = true
+        BodyVelocity.Velocity = workspace.CurrentCamera.CFrame.LookVector * 50
     end
 end
 
