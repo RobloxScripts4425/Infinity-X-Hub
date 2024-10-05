@@ -26,7 +26,7 @@ local function Fly()
     while flying do
         game:GetService("RunService").Heartbeat:Wait()
         BodyGyro.CFrame = workspace.CurrentCamera.CFrame
-        BodyVelocity.Velocity = workspace.CurrentCamera.CFrame.LookVector * 50
+        BodyVelocity.Velocity = (workspace.CurrentCamera.CFrame.LookVector * 50) + Vector3.new(0, 0, 0)
     end
 end
 
