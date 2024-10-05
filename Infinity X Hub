@@ -18,8 +18,8 @@ local function Fly()
     BodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
     BodyGyro.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
 
-    BodyVelocity.velocity = Vector3.new(0, 0, 0)
-    BodyVelocity.maxForce = Vector3.new(9e9, 9e9, 9e9)
+    BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    BodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
 
     BodyGyro.Parent = LocalPlayer.Character.HumanoidRootPart
     BodyVelocity.Parent = LocalPlayer.Character.HumanoidRootPart
@@ -28,7 +28,7 @@ local function Fly()
     while flying do
         game:GetService("RunService").Heartbeat:Wait()
         BodyGyro.CFrame = workspace.CurrentCamera.CFrame
-        BodyVelocity.velocity = workspace.CurrentCamera.CFrame.LookVector * 50
+        BodyVelocity.Velocity = workspace.CurrentCamera.CFrame.LookVector * 50
         LocalPlayer.Character.Humanoid.PlatformStand = true
     end
 end
@@ -38,6 +38,8 @@ local function Unfly()
     if BodyGyro then BodyGyro:Destroy() end
     if BodyVelocity then BodyVelocity:Destroy() end
     LocalPlayer.Character.Humanoid.PlatformStand = false
+    -- Garantir que o personagem volte ao normal
+    LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
 end
 
 local function StartFling()
