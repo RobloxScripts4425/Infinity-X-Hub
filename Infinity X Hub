@@ -28,20 +28,13 @@ local function Fly()
         game:GetService("RunService").Heartbeat:Wait()
         BodyGyro.CFrame = workspace.CurrentCamera.CFrame
         
-        -- Movimentação personalizada
+        -- Movimentação baseada na entrada do toque
         local moveDirection = Vector3.new(0, 0, 0)
 
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
+        if UserInputService:IsMouseButtonPressed(1) then
+            local mousePos = UserInputService:GetMouseLocation()
+            local cameraDirection = workspace.CurrentCamera.CFrame.LookVector
+            moveDirection = cameraDirection * (mousePos.Y > 0 and 1 or -1) -- Ajuste conforme a direção
         end
 
         BodyVelocity.Velocity = moveDirection * 50 -- Ajuste a velocidade conforme necessário
