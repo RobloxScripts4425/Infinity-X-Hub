@@ -7,6 +7,7 @@ local flying = false
 local BodyGyro, BodyVelocity
 local defaultWalkSpeed = 16
 local defaultJumpPower = 50
+local spinSpeed = 0
 
 local function Fly()
     BodyGyro = Instance.new("BodyGyro")
@@ -51,7 +52,7 @@ local function Unfly()
     if BodyGyro then BodyGyro:Destroy() end
     if BodyVelocity then BodyVelocity:Destroy() end
     LocalPlayer.Character.Humanoid.PlatformStand = false
-    LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0) -- Reseta a velocidade
+    LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
 end
 
 local PlayerTab = Window:MakeTab({
@@ -129,7 +130,7 @@ PlayerTab:AddToggle({
     Callback = function(state)
         if state then
             LocalPlayer.Character.Humanoid.CollisionEnabled = false
-            while flying do
+            while state do
                 LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(4000), 0)
                 wait()
             end
@@ -151,7 +152,7 @@ PlayerTab:AddTextbox({
 PlayerTab:AddButton({
     Name = "Start Spin",
     Callback = function()
-        while spinSpeed do
+        while spinSpeed and spinSpeed > 0 do
             LocalPlayer.Character.HumanoidRootPart.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(spinSpeed), 0)
             wait()
         end
