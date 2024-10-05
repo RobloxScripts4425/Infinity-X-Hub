@@ -1,0 +1,109 @@
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "Infinity X Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Infinity"})
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local playerList = {}
+local flying = false
+local BodyGyro, BodyVelocity
+
+local function UpdatePlayerList()
+    playerList = {}
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            table.insert(playerList, player.DisplayName)
+        end
+    end
+end
+
+UpdatePlayerList()
+
+local PlayerTab = Window:MakeTab({
+    Name = "Player",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local function Fly()
+    BodyGyro = Instance.new("BodyGyro")
+    BodyVelocity = Instance.new("BodyVelocity")
+
+    BodyGyro.P = 9e4
+    BodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+    BodyGyro.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+
+    BodyVelocity.velocity = Vector3.new(0, 0, 0)
+    BodyVelocity.maxForce = Vector3.new(9e9, 9e9, 9e9)
+
+    BodyGyro.Parent = LocalPlayer.Character.HumanoidRootPart
+    BodyVelocity.Parent = LocalPlayer.Character.HumanoidRootPart
+
+    flying = true
+    while flying do
+        game:GetService("RunService").Heartbeat:Wait()
+        BodyGyro.CFrame = workspace.CurrentCamera.CFrame
+        BodyVelocity.velocity = workspace.CurrentCamera.CFrame.LookVector * 50
+        LocalPlayer.Character.Humanoid.PlatformStand = true
+    end
+end
+
+local function Unfly()
+    flying = false
+    if BodyGyro then BodyGyro:Destroy() end
+    if BodyVelocity then BodyVelocity:Destroy() end
+    LocalPlayer.Character.Humanoid.PlatformStand = false
+end
+
+PlayerTab:AddButton({
+    Name = "Fly",
+    Callback = function()
+        if not flying then
+            Fly()
+        end
+    end
+})
+
+PlayerTab:AddButton({
+    Name = "Unfly",
+    Callback = function()
+        if flying then
+            Unfly()
+        end
+    end
+})
+
+local selectedPlayerGoto
+PlayerTab:AddDropdown({
+    Name = "Goto",
+    Default = "Select Player",
+    Options = playerList,
+    Callback = function(value)
+        selectedPlayerGoto = value
+    end
+})
+
+PlayerTab:AddButton({
+    Name = "Goto Player",
+    Callback = function()
+        if selectedPlayerGoto then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player.DisplayName == selectedPlayerGoto then
+                    LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
+                    break
+                end
+            end
+        else
+            OrionLib:MakeNotification({
+                Name = "Error",
+                Content = "Select a player first!",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    end
+})
+
+Players.PlayerAdded:Connect(UpdatePlayerList)
+Players.PlayerRemoving:Connect(UpdatePlayerList)
+
+OrionLib:Init()
