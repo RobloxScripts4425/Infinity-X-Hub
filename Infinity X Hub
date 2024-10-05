@@ -5,11 +5,7 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local flying = false
-local flinging = false
 local BodyGyro, BodyVelocity
-local spinSpeed = 0
-local defaultWalkSpeed = 16
-local defaultJumpPower = 50
 
 local function Fly()
     BodyGyro = Instance.new("BodyGyro")
@@ -26,29 +22,29 @@ local function Fly()
     BodyVelocity.Parent = LocalPlayer.Character.HumanoidRootPart
 
     flying = true
+
+    -- Movimentação durante o voo
     while flying do
         game:GetService("RunService").Heartbeat:Wait()
         BodyGyro.CFrame = workspace.CurrentCamera.CFrame
-        BodyVelocity.Velocity = Vector3.new(0, 0, 0) -- Zerar a velocidade horizontal
-
-        -- Movimentação personalizada para celular
+        
+        -- Movimentação personalizada
         local moveDirection = Vector3.new(0, 0, 0)
-        local touches = UserInputService:GetTouchPoints()
-        if #touches > 0 then
-            for _, touch in pairs(touches) do
-                if touch.Position.Y < game:GetService("GuiService"):GetGuiInset().Y then
-                    -- Caso o toque seja na parte inferior da tela
-                    if touch.Position.X < game:GetService("Workspace").Camera.ViewportSize.X / 2 then
-                        moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector -- Esquerda
-                    else
-                        moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector -- Direita
-                    end
-                    moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector -- Frente
-                end
-            end
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
+        end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
         end
 
-        BodyVelocity.Velocity = moveDirection * 50 -- Aumentar a velocidade conforme a movimentação
+        BodyVelocity.Velocity = moveDirection * 50 -- Ajuste a velocidade conforme necessário
         LocalPlayer.Character.Humanoid.PlatformStand = true
     end
 end
@@ -58,36 +54,6 @@ local function Unfly()
     if BodyGyro then BodyGyro:Destroy() end
     if BodyVelocity then BodyVelocity:Destroy() end
     LocalPlayer.Character.Humanoid.PlatformStand = false
-end
-
-local function StartFling()
-    flinging = true
-    while flinging do
-        game:GetService("RunService").Heartbeat:Wait()
-        LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(4000, 4000, 4000)
-        LocalPlayer.Character.HumanoidRootPart.CanCollide = false
-    end
-end
-
-local function StopFling()
-    flinging = false
-    LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
-    LocalPlayer.Character.HumanoidRootPart.CanCollide = true
-end
-
-local function StartSpin(speed)
-    spinSpeed = speed
-    while spinSpeed > 0 do
-        game:GetService("RunService").Heartbeat:Wait()
-        LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(spinSpeed, spinSpeed, spinSpeed)
-        LocalPlayer.Character.HumanoidRootPart.CanCollide = false
-    end
-end
-
-local function StopSpin()
-    spinSpeed = 0
-    LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
-    LocalPlayer.Character.HumanoidRootPart.CanCollide = true
 end
 
 local PlayerTab = Window:MakeTab({
@@ -111,85 +77,6 @@ PlayerTab:AddButton({
         if flying then
             Unfly()
         end
-    end
-})
-
-PlayerTab:AddToggle({
-    Name = "Fling",
-    Default = false,
-    Callback = function(state)
-        if state then
-            StartFling()
-        else
-            StopFling()
-        end
-    end
-})
-
-PlayerTab:AddTextbox({
-    Name = "Spin",
-    Default = "Enter Spin Speed",
-    TextDisappear = false,
-    Callback = function(value)
-        spinSpeed = tonumber(value) or 0
-    end
-})
-
-PlayerTab:AddButton({
-    Name = "Start Spin",
-    Callback = function()
-        StartSpin(spinSpeed)
-    end
-})
-
-PlayerTab:AddButton({
-    Name = "Stop Spin",
-    Callback = function()
-        StopSpin()
-    end
-})
-
-PlayerTab:AddTextbox({
-    Name = "Speed",
-    Default = "Enter Speed Value",
-    TextDisappear = false,
-    Callback = function(value)
-        speedValue = tonumber(value) or defaultWalkSpeed
-    end
-})
-
-PlayerTab:AddButton({
-    Name = "Add Speed",
-    Callback = function()
-        if speedValue then
-            LocalPlayer.Character.Humanoid.WalkSpeed = speedValue
-        end
-    end
-})
-
-PlayerTab:AddTextbox({
-    Name = "JumpPower",
-    Default = "Enter Jump Power",
-    TextDisappear = false,
-    Callback = function(value)
-        jumpPowerValue = tonumber(value) or defaultJumpPower
-    end
-})
-
-PlayerTab:AddButton({
-    Name = "Add JumpPower",
-    Callback = function()
-        if jumpPowerValue then
-            LocalPlayer.Character.Humanoid.JumpPower = jumpPowerValue
-        end
-    end
-})
-
-PlayerTab:AddButton({
-    Name = "Reset Speed And JumpPower",
-    Callback = function()
-        LocalPlayer.Character.Humanoid.WalkSpeed = defaultWalkSpeed
-        LocalPlayer.Character.Humanoid.JumpPower = defaultJumpPower
     end
 })
 
