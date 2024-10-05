@@ -26,10 +26,9 @@ local function Fly()
     while flying do
         game:GetService("RunService").Heartbeat:Wait()
         BodyGyro.CFrame = workspace.CurrentCamera.CFrame
-        BodyVelocity.Velocity = (workspace.CurrentCamera.CFrame.LookVector * 50) + Vector3.new(0, 0, 0)
-
-        -- Move character to where the camera is looking, but do not enable walking
-        LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.CurrentCamera.CFrame
+        
+        -- Move the character's position without triggering walking animations
+        LocalPlayer.Character.HumanoidRootPart.Position = LocalPlayer.Character.HumanoidRootPart.Position + (workspace.CurrentCamera.CFrame.LookVector * 0) -- Não altera a posição
     end
 end
 
