@@ -5,6 +5,8 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local flying = false
 local BodyGyro, BodyVelocity
+local defaultWalkSpeed = 16
+local defaultJumpPower = 50
 
 local function Fly()
     BodyGyro = Instance.new("BodyGyro")
@@ -26,15 +28,6 @@ local function Fly()
     while flying do
         game:GetService("RunService").Heartbeat:Wait()
         BodyGyro.CFrame = workspace.CurrentCamera.CFrame
-
-        -- Move the character in the direction you are looking when pressing forward
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            BodyVelocity.Velocity = workspace.CurrentCamera.CFrame.LookVector * 50
-        elseif UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            BodyVelocity.Velocity = -workspace.CurrentCamera.CFrame.LookVector * 50
-        else
-            BodyVelocity.Velocity = Vector3.new(0, 0, 0) -- Para de mover se não estiver pressionando W ou S
-        end
     end
 end
 
@@ -51,21 +44,59 @@ local PlayerTab = Window:MakeTab({
     PremiumOnly = false
 })
 
+PlayerTab:AddToggle({
+    Name = "Bug Player",
+    Default = false,
+    Callback = function(state)
+        if state then
+            LocalPlayer.Character.HumanoidRootPart.CanCollide = false -- Desativa colisão
+        else
+            LocalPlayer.Character.HumanoidRootPart.CanCollide = true -- Ativa colisão
+        end
+    end
+})
+
+PlayerTab:AddTextbox({
+    Name = "Speed",
+    Default = "Enter Speed Value",
+    TextDisappear = false,
+    Callback = function(value)
+        speedValue = tonumber(value) or defaultWalkSpeed
+    end
+})
+
 PlayerTab:AddButton({
-    Name = "Fly",
+    Name = "Add Speed",
     Callback = function()
-        if not flying then
-            Fly()
+        if speedValue then
+            LocalPlayer.Character.Humanoid.WalkSpeed = speedValue
+        end
+    end
+})
+
+PlayerTab:AddTextbox({
+    Name = "JumpPower",
+    Default = "Enter Jump Power",
+    TextDisappear = false,
+    Callback = function(value)
+        jumpPowerValue = tonumber(value) or defaultJumpPower
+    end
+})
+
+PlayerTab:AddButton({
+    Name = "Add JumpPower",
+    Callback = function()
+        if jumpPowerValue then
+            LocalPlayer.Character.Humanoid.JumpPower = jumpPowerValue
         end
     end
 })
 
 PlayerTab:AddButton({
-    Name = "Unfly",
+    Name = "Reset Speed And JumpPower",
     Callback = function()
-        if flying then
-            Unfly()
-        end
+        LocalPlayer.Character.Humanoid.WalkSpeed = defaultWalkSpeed
+        LocalPlayer.Character.Humanoid.JumpPower = defaultJumpPower
     end
 })
 
