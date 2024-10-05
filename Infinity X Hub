@@ -3,6 +3,7 @@ local Window = OrionLib:MakeWindow({Name = "Infinity X Hub", HidePremium = false
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
 local flying = false
 local flinging = false
 local BodyGyro, BodyVelocity
@@ -15,7 +16,7 @@ local function Fly()
     BodyVelocity = Instance.new("BodyVelocity")
 
     BodyGyro.P = 9e4
-    BodyGyro.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+    BodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
     BodyGyro.CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
 
     BodyVelocity.Velocity = Vector3.new(0, 0, 0)
@@ -30,19 +31,21 @@ local function Fly()
         BodyGyro.CFrame = workspace.CurrentCamera.CFrame
         BodyVelocity.Velocity = Vector3.new(0, 0, 0) -- Zerar a velocidade horizontal
 
-        -- Movimentação personalizada
+        -- Movimentação personalizada para celular
         local moveDirection = Vector3.new(0, 0, 0)
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-            moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-            moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
+        local touches = UserInputService:GetTouchPoints()
+        if #touches > 0 then
+            for _, touch in pairs(touches) do
+                if touch.Position.Y < game:GetService("GuiService"):GetGuiInset().Y then
+                    -- Caso o toque seja na parte inferior da tela
+                    if touch.Position.X < game:GetService("Workspace").Camera.ViewportSize.X / 2 then
+                        moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector -- Esquerda
+                    else
+                        moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector -- Direita
+                    end
+                    moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector -- Frente
+                end
+            end
         end
 
         BodyVelocity.Velocity = moveDirection * 50 -- Aumentar a velocidade conforme a movimentação
