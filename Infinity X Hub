@@ -3,26 +3,12 @@ local Window = OrionLib:MakeWindow({Name = "Infinity X Hub", HidePremium = false
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local playerList = {}
 local flying = false
+local flinging = false
 local BodyGyro, BodyVelocity
-
-local function UpdatePlayerList()
-    playerList = {}
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            table.insert(playerList, player.DisplayName)
-        end
-    end
-end
-
-UpdatePlayerList()
-
-local PlayerTab = Window:MakeTab({
-    Name = "Player",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
+local spinSpeed = 0
+local defaultWalkSpeed = 16
+local defaultJumpPower = 50
 
 local function Fly()
     BodyGyro = Instance.new("BodyGyro")
@@ -54,6 +40,42 @@ local function Unfly()
     LocalPlayer.Character.Humanoid.PlatformStand = false
 end
 
+local function StartFling()
+    flinging = true
+    while flinging do
+        game:GetService("RunService").Heartbeat:Wait()
+        LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(4000, 4000, 4000)
+        LocalPlayer.Character.HumanoidRootPart.CanCollide = false
+    end
+end
+
+local function StopFling()
+    flinging = false
+    LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+    LocalPlayer.Character.HumanoidRootPart.CanCollide = true
+end
+
+local function StartSpin(speed)
+    spinSpeed = speed
+    while spinSpeed > 0 do
+        game:GetService("RunService").Heartbeat:Wait()
+        LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(spinSpeed, spinSpeed, spinSpeed)
+        LocalPlayer.Character.HumanoidRootPart.CanCollide = false
+    end
+end
+
+local function StopSpin()
+    spinSpeed = 0
+    LocalPlayer.Character.HumanoidRootPart.RotVelocity = Vector3.new(0, 0, 0)
+    LocalPlayer.Character.HumanoidRootPart.CanCollide = true
+end
+
+local PlayerTab = Window:MakeTab({
+    Name = "Player",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
 PlayerTab:AddButton({
     Name = "Fly",
     Callback = function()
@@ -72,38 +94,83 @@ PlayerTab:AddButton({
     end
 })
 
-local selectedPlayerGoto
-PlayerTab:AddDropdown({
-    Name = "Goto",
-    Default = "Select Player",
-    Options = playerList,
-    Callback = function(value)
-        selectedPlayerGoto = value
-    end
-})
-
-PlayerTab:AddButton({
-    Name = "Goto Player",
-    Callback = function()
-        if selectedPlayerGoto then
-            for _, player in pairs(Players:GetPlayers()) do
-                if player.DisplayName == selectedPlayerGoto then
-                    LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character.HumanoidRootPart.CFrame
-                    break
-                end
-            end
+PlayerTab:AddToggle({
+    Name = "Fling",
+    Default = false,
+    Callback = function(state)
+        if state then
+            StartFling()
         else
-            OrionLib:MakeNotification({
-                Name = "Error",
-                Content = "Select a player first!",
-                Image = "rbxassetid://4483345998",
-                Time = 5
-            })
+            StopFling()
         end
     end
 })
 
-Players.PlayerAdded:Connect(UpdatePlayerList)
-Players.PlayerRemoving:Connect(UpdatePlayerList)
+PlayerTab:AddTextbox({
+    Name = "Spin",
+    Default = "Enter Spin Speed",
+    TextDisappear = false,
+    Callback = function(value)
+        spinSpeed = tonumber(value) or 0
+    end
+})
+
+PlayerTab:AddButton({
+    Name = "Start Spin",
+    Callback = function()
+        StartSpin(spinSpeed)
+    end
+})
+
+PlayerTab:AddButton({
+    Name = "Stop Spin",
+    Callback = function()
+        StopSpin()
+    end
+})
+
+PlayerTab:AddTextbox({
+    Name = "Speed",
+    Default = "Enter Speed Value",
+    TextDisappear = false,
+    Callback = function(value)
+        speedValue = tonumber(value) or defaultWalkSpeed
+    end
+})
+
+PlayerTab:AddButton({
+    Name = "Add Speed",
+    Callback = function()
+        if speedValue then
+            LocalPlayer.Character.Humanoid.WalkSpeed = speedValue
+        end
+    end
+})
+
+PlayerTab:AddTextbox({
+    Name = "JumpPower",
+    Default = "Enter Jump Power",
+    TextDisappear = false,
+    Callback = function(value)
+        jumpPowerValue = tonumber(value) or defaultJumpPower
+    end
+})
+
+PlayerTab:AddButton({
+    Name = "Add JumpPower",
+    Callback = function()
+        if jumpPowerValue then
+            LocalPlayer.Character.Humanoid.JumpPower = jumpPowerValue
+        end
+    end
+})
+
+PlayerTab:AddButton({
+    Name = "Reset Speed And JumpPower",
+    Callback = function()
+        LocalPlayer.Character.Humanoid.WalkSpeed = defaultWalkSpeed
+        LocalPlayer.Character.Humanoid.JumpPower = defaultJumpPower
+    end
+})
 
 OrionLib:Init()
