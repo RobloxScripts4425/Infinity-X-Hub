@@ -1,22 +1,24 @@
 local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local hrp = character:WaitForChild("HumanoidRootPart")
-local speed = 1000
 
 while true do
     for _, object in pairs(workspace:GetChildren()) do
-        if object:IsA("Model") and not object:IsDescendantOf(game.Players) and object.PrimaryPart then
+        if object:IsA("Model") and not object:IsDescendantOf(game.Players) and not object.PrimaryPart and not object.PrimaryPart.Anchored then
             local clonedObject = object:Clone()
             clonedObject.Parent = workspace
-            clonedObject:SetPrimaryPartCFrame(hrp.CFrame)
+            clonedObject:SetPrimaryPartCFrame(hrp.CFrame * CFrame.new(0, 0, 0))
             clonedObject.PrimaryPart.Anchored = false
-            clonedObject.PrimaryPart.Velocity = Vector3.new(0, speed, 0)
-            clonedObject.PrimaryPart.RotVelocity = Vector3.new(0, speed, 0)
+            
             local bodyPosition = Instance.new("BodyPosition", clonedObject.PrimaryPart)
             bodyPosition.MaxForce = Vector3.new(4000, 4000, 4000)
             bodyPosition.D = 1000
             bodyPosition.P = 10000
             bodyPosition.Position = hrp.Position
+            
+            local bodyGyro = Instance.new("BodyGyro", clonedObject.PrimaryPart)
+            bodyGyro.MaxTorque = Vector3.new(4000, 4000, 4000)
+            bodyGyro.CFrame = hrp.CFrame
         end
     end
     wait(0.1)
