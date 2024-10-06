@@ -96,9 +96,9 @@ local function createControlButton()
     button.MouseButton1Click:Connect(function()
         toggleBlackHole()
         if blackHoleActive then
-            button.Text = "Deactivate Black Hole"
+            button.Text = "Deactivate Black Hole1"
         else
-            button.Text = "Activate Black Hole"
+            button.Text = "Activate Black Hole2"
         end
     end)
 end
