@@ -14,3 +14,11 @@ Tab:AddButton({
 		player.Character.Humanoid.WalkSpeed = player.Character.Humanoid.WalkSpeed + 100
   	end    
 })
+
+Tab:AddButton({
+	Name = "+100 JumpPower",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		player.Character.Humanoid.JumpPower = player.Character.Humanoid.JumpPower + 100
+  	end    
+})
