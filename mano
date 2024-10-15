@@ -1,162 +1,521 @@
--- Por Favor Use O Código Com Responsabilidade 
--- Hub Brookhaven RP 🏡 [2024]
--- Não Compartilhar o Código 
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
-local Redz = loadstring(game:HttpGet("https://raw.githubusercontent.com/RedzV2/RedzV2/main/Source"))()
+-- Título do script hub
+local Window = OrionLib:MakeWindow({Name = "- 🔥Fire hub🔥| Brookhaven RP🏡 | -", HidePremium = false, SaveConfig = False, ConfigFolder = "FireCfg",})
 
-local Window = Redz:CreateWindow("SHNMAXHUB | BROOKHAVEN RP")
+-- Abas
+local BemvindoTab = Window:MakeTab({
+    Name = "Bem vindo!!",
+    Icon = "rbxassetid://14355589156",
+    PremiumOnly = false
+})
 
-local soundId = "rbxassetid://1836973601"
+local TrollTab = Window:MakeTab({
+    Name = "Troll",
+    Icon = "rbxassetid://9943307899",
+    PremiumOnly = false
+})
 
--- Função para tocar o som
-local function playSound()
-    local sound = Instance.new("Sound")
-    sound.SoundId = soundId
-    sound.Parent = game.Workspace
-    sound:Play()
-end
+local OutrosTab = Window:MakeTab({
+    Name = "Outros..",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
 
--- Tocar o som assim que o script for executado
-playSound()
+-- Notificação
+OrionLib:MakeNotification({
+    Name = "Notificação",
+    Content = "Fire Hub aberto com sucesso!",
+    Image = "rbxassetid://4483345998",
+    Time = 5
+})
 
--- Criando uma aba "Welcome"
-local MainTab = Window:CreateTab("Welcome")
+-- Seção
+local Section = BemvindoTab:AddSection({
+    Name = "Créditos."
+})
 
--- Criando uma label para mostrar o número de jogadores
-local playerCountLabel = MainTab:CreateLabel("Jogadores No Servidor: " .. #game.Players:GetPlayers())
+-- Trollagens
 
--- Função para atualizar o número de jogadores quando alguém entra ou sai
-local function updatePlayerCount()
-    playerCountLabel.Text = "Jogadores No Servidor: " .. #game.Players:GetPlayers()
-end
+-- Speed
+TrollTab:AddSlider({
+    Name = "Poder da velocidade (não funcionando..)",
+    Min = 16,
+    Max = 500,
+    Default = 16,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 1,
+    ValueName = "Velocidade",
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            humanoid.WalkSpeed = Value
+        end
+    end    
+})
 
--- Conecta a função ao evento de entrada de novos jogadores
-game.Players.PlayerAdded:Connect(updatePlayerCount)
-game.Players.PlayerRemoving:Connect(updatePlayerCount)
+-- Teleporte
+local Section = TrollTab:AddSection({
+    Name = "Teleporte, coloque o nome do jogador para teleportar!"
+})
 
--- Atualiza a contagem de jogadores no início
-updatePlayerCount()
-
--- Atualiza a hora na TextLabel
-local timeLabel = MainTab:CreateLabel("Hora atual: ")
-
--- Função para atualizar a hora
-local function updateTime()
-    while true do
-        local currentTime = os.date("%H:%M:%S")
-        timeLabel.Text = "Hora atual: " .. currentTime
-        wait(1)
-    end
-end
-
--- Iniciando a atualização da hora
-coroutine.wrap(updateTime)()
-
--- Mensagens de boas-vindas
-MainTab:CreateLabel("Welcome To Shnmaxhub")
-MainTab:CreateLabel("Team | Shnmaxscripts")
-MainTab:CreateLabel("Script Development Helpers: XXXTENTACION The Lucca")
-MainTab:CreateLabel("Last Update to Hub: 19/Day/2024/Year/Jun/Month")
-MainTab:CreateLabel("Code Developed By: Shnmaxscripts Owner")
-MainTab:CreateLabel("Use Responsibly")
-MainTab:CreateLabel("Have a Great Experience!")
-
--- Criando a aba "Trolling"
-local TrollingTab = Window:CreateTab("Trolling")
-
-TrollingTab:CreateLabel("Aviso [!] Use Conforme Sua Responsabilidade")
-
-local section = TrollingTab:CreateSection("Selecione um Método de Fling")
-
--- Dropdown para selecionar o método de kill
-local killMethodDropdown = TrollingTab:CreateDropdown("Selecionar Método De Kill", {"Nenhum", "Couch"}, function(value)
-    if value == "Couch" then
-        local args = {"PickingTools", "Couch"}
-        game:GetService("ReplicatedStorage").RE:FindFirstChild("1Too1l"):InvokeServer(unpack(args))
-        print('Couch equipado!')
-    else
-        print("Nenhum método selecionado.")
-    end
-end)
-
--- Função para flingar jogador
-local function flingPlayer(targetPlayerName)
-    local targetPlayer = game.Players:FindFirstChild(targetPlayerName)
-    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 2, 0)
-    else
-        print("Jogador alvo não encontrado ou inválido.")
-    end
-end
-
--- Dropdown para selecionar o jogador para fling
-local playerDropdown = TrollingTab:CreateDropdown("Selecione o Jogador para Fling", function(playerName)
-    flingPlayer(playerName)
-end)
-
--- Atualiza o dropdown com os jogadores no servidor
-local function updatePlayerDropdown()
-    local players = {}
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player.Name ~= game.Players.LocalPlayer.Name then
-            table.insert(players, player.Name)
+TrollTab:AddTextbox({
+    Name = "Nome do Jogador para teleportar!",
+    Default = "",
+    TextDisappear = true,
+    Callback = function(playerName)
+        local player = game.Players.LocalPlayer
+        local targetPlayer = nil
+        
+        for _, p in ipairs(game.Players:GetPlayers()) do
+            if p.Name:sub(1, #playerName):lower() == playerName:lower() then
+                targetPlayer = p
+                break
+            end
+        end
+        
+        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local targetPosition = targetPlayer.Character.HumanoidRootPart.Position
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition)
+        else
+            warn("Jogador não encontrado ou inacessível.")
         end
     end
-    playerDropdown:SetOptions(players)
+})
+
+-- Fling do chat gpt e sessão
+
+
+
+local Section = TrollTab:AddSection({
+    Name = "Fling.."
+})
+
+local targetPlayerName = ""
+local flingConnection = nil
+local respawnConnection = nil
+local speed = 500 -- Aumenta a velocidade para tornar o fling mais forte
+local originalPosition = nil
+
+-- Adiciona uma checkbox para ativar/desativar o fling diretamente
+TrollTab:AddToggle({
+	Name = "Ativar Fling",
+	Default = false,
+	Callback = function(state)
+		if flingConnection then
+			flingConnection:Disconnect()
+			flingConnection = nil
+		end
+		if respawnConnection then
+			respawnConnection:Disconnect()
+			respawnConnection = nil
+		end
+
+		if state then
+			-- Encontra o primeiro jogador com o nome que começa com 'targetPlayerName'
+			local targetPlayer = nil
+			for _, player in pairs(game.Players:GetPlayers()) do
+				if string.find(player.Name:lower(), targetPlayerName:lower()) == 1 then
+					targetPlayer = player
+					break
+				end
+			end
+
+			if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+				local humanoidRootPart = targetPlayer.Character.HumanoidRootPart
+				local player = game.Players.LocalPlayer
+
+				-- Garante que o personagem do jogador local tem uma HumanoidRootPart para flings
+				if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+					local playerRootPart = player.Character.HumanoidRootPart
+
+					-- Salva a posição original
+					originalPosition = playerRootPart.CFrame
+
+					-- Conecta um loop para mover o jogador local ao redor do alvo em alta velocidade
+					flingConnection = game:GetService("RunService").Heartbeat:Connect(function()
+						if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+							-- Teletransporta você para o centro do alvo
+							playerRootPart.CFrame = humanoidRootPart.CFrame
+
+							-- Aplica uma força alta para o "fling"
+							playerRootPart.Velocity = Vector3.new(
+								math.random(-speed, speed),
+								math.random(-speed, speed),
+								math.random(-speed, speed)
+							)
+							
+							-- Verifica se o jogador alvo caiu no void (Y < 0)
+							if humanoidRootPart.Position.Y < 0 then
+								playerRootPart.CFrame = originalPosition
+							end
+						else
+							-- Desconecta se o alvo não estiver mais acessível
+							if flingConnection then
+								flingConnection:Disconnect()
+								flingConnection = nil
+							end
+						end
+					end)
+
+					-- Detecta quando o alvo renasce e reinicia o fling
+					respawnConnection = targetPlayer.CharacterAdded:Connect(function(character)
+						-- Atualiza o humanoidRootPart quando o alvo renascer
+						wait(1)
+						humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+						-- Reestabelece a conexão de fling quando o alvo renascer
+						if not flingConnection then
+							flingConnection = game:GetService("RunService").Heartbeat:Connect(function()
+								if humanoidRootPart and humanoidRootPart.Parent then
+									playerRootPart.CFrame = humanoidRootPart.CFrame
+									playerRootPart.Velocity = Vector3.new(
+										math.random(-speed, speed),
+										math.random(-speed, speed),
+										math.random(-speed, speed)
+									)
+								end
+							end)
+						end
+					end)
+				end
+			else
+				warn("Jogador não encontrado ou inacessível.")
+			end
+		end
+	end
+})
+
+-- Adiciona uma textbox para inserir o nome do jogador na aba Troll
+TrollTab:AddTextbox({
+	Name = "Nome do Jogador para Fling",
+	Default = "",
+	TextDisappear = true,
+	Callback = function(playerName)
+		targetPlayerName = playerName
+	end
+})
+
+--View e sessão 
+
+local Section = TrollTab:AddSection({
+    Name = "View.."
+})
+
+local viewTargetName = ""
+local viewConnection = nil
+
+-- Adiciona uma checkbox para ativar/desativar a view
+TrollTab:AddToggle({
+	Name = "Ativar View",
+	Default = false,
+	Callback = function(state)
+		local player = game.Players.LocalPlayer
+		local camera = game.Workspace.CurrentCamera
+		
+		-- Desativa a view atual, caso esteja ativa
+		if viewConnection then
+			viewConnection:Disconnect()
+			viewConnection = nil
+			camera.CameraSubject = player.Character.Humanoid -- Volta para o próprio jogador
+		end
+
+		if state then
+			-- Encontra o jogador cujo nome contém 'viewTargetName'
+			local targetPlayer = nil
+			for _, p in pairs(game.Players:GetPlayers()) do
+				if string.find(p.Name:lower(), viewTargetName:lower()) then
+					targetPlayer = p
+					break
+				end
+			end
+
+			if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+				-- Conecta a câmera para seguir o jogador alvo
+				viewConnection = game:GetService("RunService").RenderStepped:Connect(function()
+					if targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+						-- Faz a câmera seguir o humanoide do alvo
+						camera.CameraSubject = targetPlayer.Character.Humanoid
+						camera.CameraType = Enum.CameraType.Follow
+					else
+						-- Desconecta se o alvo não estiver mais acessível
+						if viewConnection then
+							viewConnection:Disconnect()
+							viewConnection = nil
+							camera.CameraSubject = player.Character.Humanoid -- Volta para o próprio jogador
+						end
+					end
+				end)
+			else
+				warn("Jogador não encontrado ou inacessível.")
+			end
+		end
+	end
+})
+
+-- Adiciona uma textbox para inserir o nome do jogador na aba Troll
+TrollTab:AddTextbox({
+	Name = "Nome do Jogador para View",
+	Default = "",
+	TextDisappear = true,
+	Callback = function(playerName)
+		viewTargetName = playerName
+	end
+})
+
+--Tamanho de fica pequeno e grande
+
+local Section = OutrosTab:AddSection({
+    Name = "botão de fica grande e pequeno.."
+})
+
+-- Botão para diminuir o tamanho do personagem
+OutrosTab:AddButton({
+	Name = "Ficar Pequeno (BETA)",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		
+		for _, part in pairs(character:GetChildren()) do
+			if part:IsA("BasePart") then
+				part.Size = part.Size * 0.5 -- Diminui o tamanho pela metade
+				part.CustomPhysicalProperties = PhysicalProperties.new(1, 0.3, 0.5) -- Ajuste de peso e densidade, se necessário
+			end
+		end
+
+		-- Ajusta a altura do humanoide para o novo tamanho
+		if character:FindFirstChild("Humanoid") then
+			character.Humanoid.HipHeight = character.Humanoid.HipHeight * 0.5
+		end
+	end
+})
+
+-- Botão para restaurar o tamanho do personagem
+OutrosTab:AddButton({
+	Name = "Tamanho Normal (BETA)",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		
+		for _, part in pairs(character:GetChildren()) do
+			if part:IsA("BasePart") then
+				part.Size = part.Size * 2 -- Restaura ao tamanho original
+				part.CustomPhysicalProperties = PhysicalProperties.new(1, 0.3, 0.5) -- Ajuste de peso e densidade, se necessário
+			end
+		end
+
+		-- Restaura a altura do humanoide para o tamanho original
+		if character:FindFirstChild("Humanoid") then
+			character.Humanoid.HipHeight = character.Humanoid.HipHeight * 2
+		end
+	end
+})
+
+
+
+
+--Esp
+
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = game:GetService("Workspace").CurrentCamera
+local RunService = game:GetService("RunService")
+local espEnabled = false
+local espObjects = {}
+
+-- Função para criar o ESP
+local function CreateESP(player)
+    if player == LocalPlayer then return end -- Ignora o próprio jogador
+
+    local BillboardGui = Instance.new("BillboardGui")
+    BillboardGui.Name = "ESP"
+    BillboardGui.Adornee = player.Character:WaitForChild("HumanoidRootPart")
+    BillboardGui.Size = UDim2.new(0, 200, 0, 50)
+    BillboardGui.AlwaysOnTop = true
+
+    -- Nome do jogador
+    local NameLabel = Instance.new("TextLabel")
+    NameLabel.Name = "NameLabel"
+    NameLabel.Text = "Nome: " .. player.Name
+    NameLabel.Size = UDim2.new(1, 0, 0.3, 0)
+    NameLabel.TextColor3 = Color3.new(1, 1, 1)
+    NameLabel.BackgroundTransparency = 1
+    NameLabel.TextStrokeTransparency = 0
+    NameLabel.Parent = BillboardGui
+
+    -- Distância do jogador
+    local DistanceLabel = Instance.new("TextLabel")
+    DistanceLabel.Name = "DistanceLabel"
+    DistanceLabel.Text = "Distância: calculando..."
+    DistanceLabel.Size = UDim2.new(1, 0, 0.3, 0)
+    DistanceLabel.Position = UDim2.new(0, 0, 0.3, 0)
+    DistanceLabel.TextColor3 = Color3.new(1, 1, 1)
+    DistanceLabel.BackgroundTransparency = 1
+    DistanceLabel.TextStrokeTransparency = 0
+    DistanceLabel.Parent = BillboardGui
+
+    -- Idade da conta
+    local AgeLabel = Instance.new("TextLabel")
+    AgeLabel.Name = "AgeLabel"
+    AgeLabel.Text = "Idade da conta: " .. player.AccountAge .. " dias"
+    AgeLabel.Size = UDim2.new(1, 0, 0.3, 0)
+    AgeLabel.Position = UDim2.new(0, 0, 0.6, 0)
+    AgeLabel.TextColor3 = Color3.new(1, 1, 1)
+    AgeLabel.BackgroundTransparency = 1
+    AgeLabel.TextStrokeTransparency = 0
+    AgeLabel.Parent = BillboardGui
+
+    BillboardGui.Parent = player.Character.HumanoidRootPart
+    espObjects[player.Name] = {Gui = BillboardGui, DistanceLabel = DistanceLabel}
 end
 
-game.Players.PlayerAdded:Connect(updatePlayerDropdown)
-game.Players.PlayerRemoving:Connect(updatePlayerDropdown)
+-- Função para atualizar a distância
+local function UpdateESP()
+    if not espEnabled then return end
 
--- Atualiza o dropdown no início
-updatePlayerDropdown()
-
--- Função para pegar item
-local function grabItem(itemName)
-    local args = {"PickingTools", itemName}
-    local remoteFunction = game:GetService("ReplicatedStorage").RE:FindFirstChild("1Too1l")
-    if remoteFunction then
-        remoteFunction:InvokeServer(unpack(args))
-    else
-        warn("Função remota '1Too1l' não encontrada em ReplicatedStorage.RE")
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local targetPart = player.Character.HumanoidRootPart
+            local distance = (LocalPlayer.Character.HumanoidRootPart.Position - targetPart.Position).Magnitude
+            if espObjects[player.Name] then
+                espObjects[player.Name].DistanceLabel.Text = "Distância: " .. math.floor(distance) .. " studs"
+            end
+        end
     end
 end
 
--- Botão para pegar "Couch"
-MainTab:CreateButton("Pegar Couch", function()
-    grabItem("Couch")
-end)
+-- Função para remover ESP
+local function RemoveESP()
+    for _, esp in pairs(espObjects) do
+        if esp.Gui then
+            esp.Gui:Destroy()
+        end
+    end
+    espObjects = {}
+end
 
--- Seção de Proteção
-local ProtectionTab = Window:CreateTab("Protection")
-
-ProtectionTab:CreateButton("Ativar Void Protection [V9]", function()
-    game.Workspace.FallenPartsDestroyHeight = 0/0 -- Evita que partes caiam
-    print("Void Protection ativada.")
-end)
-
-ProtectionTab:CreateToggle("Ant Sit", false, function(value)
-    local player = game.Players.LocalPlayer
-    local humanoid = player.Character and player.Character.Humanoid
-    if humanoid then
-        humanoid:SetStateEnabled("Seated", not value)
+-- Função para alternar o ESP
+local function ToggleESP(state)
+    espEnabled = state
+    if espEnabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                CreateESP(player)
+            end
+        end
     else
-        print("Erro: Personagem não encontrado.")
+        RemoveESP()
+    end
+end
+
+-- Conectando a checkbox ao ToggleESP
+OutrosTab:AddToggle({
+    Name = "Ativar ESP",
+    Default = false,
+    Callback = function(state)
+        ToggleESP(state)
+    end
+})
+
+-- Atualizando a distância a cada frame
+RunService.RenderStepped:Connect(UpdateESP)
+
+-- Adicionando ESP para novos jogadores que entrarem
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        if espEnabled then
+            wait(1) -- Aguarda o personagem carregar
+            CreateESP(player)
+        end
+    end)
+end)
+
+-- Removendo ESP de jogadores que saem
+Players.PlayerRemoving:Connect(function(player)
+    if espObjects[player.Name] then
+        espObjects[player.Name].Gui:Destroy()
+        espObjects[player.Name] = nil
+    end
+end)
+
+
+
+local Section = TrollTab:AddSection({
+    Name = "Bring.."
+})
+
+--Bring
+
+local targetPlayerName = ""
+
+-- Botão para realizar o Bring uma vez
+TrollTab:AddButton({
+	Name = "Bring Jogador",
+	Callback = function()
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local playerRootPart = character:FindFirstChild("HumanoidRootPart")
+
+		-- Salva a posição original do jogador local
+		local originalPosition = playerRootPart.CFrame
+
+		-- Encontra o primeiro jogador com o nome que começa com 'targetPlayerName'
+		local targetPlayer = nil
+		for _, p in pairs(game.Players:GetPlayers()) do
+			if string.find(p.Name:lower(), targetPlayerName:lower()) == 1 then
+				targetPlayer = p
+				break
+			end
+		end
+
+		if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+			local humanoidRootPart = targetPlayer.Character.HumanoidRootPart
+
+			-- Traz o jogador alvo para próximo do jogador local
+			humanoidRootPart.CFrame = playerRootPart.CFrame * CFrame.new(1, 0, -2) -- Ajuste de posição
+
+			-- Monitora se o jogador alvo se senta e teletransporta ambos de volta para a posição original
+			humanoidRootPart:GetPropertyChangedSignal("CFrame"):Connect(function()
+				if targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid").Sit then
+					playerRootPart.CFrame = originalPosition
+					humanoidRootPart.CFrame = originalPosition
+				end
+			end)
+		else
+			warn("Jogador não encontrado ou inacessível.")
+		end
+	end
+})
+
+-- Adiciona uma textbox para inserir o nome do jogador na aba Troll
+TrollTab:AddTextbox({
+	Name = "Nome do Jogador para Bring",
+	Default = "",
+	TextDisappear = true,
+	Callback = function(playerName)
+		targetPlayerName = playerName
+	end
+})
+
+-- Texto dos créditos
+BemvindoTab:AddParagraph("Criadores.","Criador do Fire Hub: Davi_gamer20221. Youtuber que me ajudou: Zetra_ofc. Aplicativo que me ajudou: ChatGPT.")
+
+-- Seção do link do Discord 
+local Section = BemvindoTab:AddSection({
+    Name = "Link do Discord se tiver bugs!! ou entre no nosso Discord!"
+})
+
+BemvindoTab:AddParagraph("Bugs no script??","Bugs? Avise no Discord!! Link abaixo no botão!")
+
+-- Botão para entrar no Discord
+BemvindoTab:AddButton({
+    Name = "Entre no nosso Discord se tiverem bugs!",
+    Callback = function()
+        setclipboard("https://discord.gg/ktNG2KwY")
+        print("Link copiado!")
     end    
-end)
-
--- Seção de Teleportes
-local TeleportTab = Window:CreateTab("Teleportes")
-
-TeleportTab:CreateButton("Teleportar Atrás dos Prédios", function()
-    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(192, 4, 272)
-end)
-
--- Executa o script do link fornecido
-loadstring(game:HttpGet("https://raw.githubusercontent.com/RobloxScripts4425/Infinity-X-Hub/refs/heads/main/mano"))()
-
--- Chama a função para executar automaticamente o código
-AutoExecute()
-
--- End Script
-print("Hub carregado com sucesso! Use com responsabilidade.")
+}
